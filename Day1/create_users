@@ -1,0 +1,39 @@
+api.post("/users",async(req,res)=>{
+try
+{
+	let name=req.body.name;
+	let email=req.body.email;
+	let password=req.body.password;
+	
+	if(!name || !email || !password)
+	{
+		return res.status(400).json({message: "Mandatory paramters"});
+	}
+	
+	let existingUser=await Users.findOne({email:email});
+	if(existingUser)
+	{
+		return res.status(409).json({
+			message:"Email already exists"});
+	}
+	const hashedPassword = await bcrypt.hash(password, 10);
+	
+	let user=await Users.create({
+		name:name,
+		email:email,
+		password:hashedPassword});
+		
+	return res.status(201).json({
+		message:"new user created",
+		id: user._id,
+        	name: user.name,
+        	email: user.email
+		});
+}
+catch(error)
+{
+	return res.status(500).json({
+		message:"internal server error"});
+}
+});
+	
