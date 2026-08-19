@@ -1,0 +1,41 @@
+app.patch("/employees/:id",async(req,res)=>{
+try
+{
+  	const id=req.params.id;
+  	let empname=req.body.empname;
+  	let empfathername=req.body.empfathername;
+  	let updates={};
+  	if(empname)
+  	{
+  		updates.empname=empname
+  	}
+  	if(empfathername)
+  	{
+  		updates.empfathername=empfathername
+  	}
+  	let employee=await Employee.findByIdAndUpdate(
+  		id,
+  		{
+  			$set:updates
+  		},
+  		{
+  			new : true
+  		});
+  	if(!employee)
+  	{
+  		return res.status(404).json({
+  			message:"Employee not found"
+  			});
+  	}
+  	return res.status(200).json({
+  		message:"user updated",
+  		employee:employee
+  		});
+}
+catch(error)
+{
+	return res.status(500).json({
+		message:"internal server error"
+		});
+}
+	
