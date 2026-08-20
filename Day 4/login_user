@@ -1,0 +1,41 @@
+# login me we use post coz password is sent in body not as query params
+
+app.post("/login",async(req,res)=>{
+try{
+
+	let email=req.body.email;
+	let password=req.body.password;
+	
+	if(!email || !password)
+	{
+		return res.status(400).json({
+			message:"email and password are required"});
+	}
+	let user= await User.findOne({email: email});
+	if(!user)
+	{
+		return res.status(401).json({
+		message:"user not found"
+		});
+	}
+	const isMatch = await bcrypt.compare(password,user.password);
+	
+	if(!isMatch)
+	{
+		return res.status(401).json({
+			message:"invalid credentials"
+			});
+	}
+	
+	
+	return res.status(200).json({
+		message:"login successfull"});
+}
+catch(error)
+{
+	return res.status(500).json({
+		message:"internal server error"});
+}
+	});
+	
+	
