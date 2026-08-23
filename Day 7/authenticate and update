@@ -1,0 +1,53 @@
+app.patch("/users/:id",auth,async(req,res)=>{
+try{
+    	let id=req.params.id;
+    	let loginId=req.user.userId;
+    	if(id!==loginId)
+    	{
+    		return res.status(403).json({
+    			message:"User must be logged in"
+    			});
+    	}
+    	let age=req.body.age;
+    	let name=req.body.name;
+    	let updates={};
+    	if(name)
+    	{
+    		updates.name=name;
+    	}
+    	if(age)
+    	{
+    		updates.age=age;
+    	}
+    	let updatedUser=await User.findByIdAndUpdate(id,
+    				{	
+    					$set:updates
+    				},
+    				{
+    					new:true
+    				}
+    				);
+    	if (!updatedUser) 
+    	{
+    	    return res.status(404).json({
+    		message: "User not found"
+    	    });
+    	}
+    	return res.status(200).json({
+    		message:"user updated",
+    		user: {
+    			    _id: updatedUser._id,
+    			    name: updatedUser.name,
+    			    email: updatedUser.email,
+    			    age: updatedUser.age
+    			}});
+}
+catch(error)
+{
+	return res.status(500).json({
+		message:"internal server error"});
+}
+				
+	
+	
+	
