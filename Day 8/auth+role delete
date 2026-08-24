@@ -1,0 +1,27 @@
+app.delete("/users/:id" , auth ,async(req,res)=>{
+try
+{
+	let id=req.params.id;
+	let role=req.user.role;
+	if(role!=="admin")
+	{
+		return res.status(403).json({
+			message:"user must be admin and must be logged in"});
+	}
+	let user=await User.findByIdAndDelete(id);
+	if(!user)
+	{
+		return res.status(404).json({
+			message:"user not found"});
+	}
+	return res.status(200).json({
+		message:"user deleted",
+		user_id:id
+		});
+}
+catch(error)
+{
+	return res.status(500).json({
+		message:"internal server error"});
+}
+});
